@@ -90,12 +90,12 @@
 
 <body>
     {{-- <h1>haloo</h1> --}}
-    <x-navbar-component>DN ADM SAP</x-navbar-component>
+    <x-navbar-component>PCC MATCHING</x-navbar-component>
 
 
     <div class="container px-0 mt-2 ">
         <div class=" w-full  ">
-            <h3 class="card-header p-3 text-3xl"><i class="fa fa-star"></i> DN ADM SAP</h3>
+            <h3 class="card-header p-3 text-3xl"><i class="fa fa-star"></i> PCC MATCHING</h3>
             <div class="card-body">
 
                 @session('success')
@@ -120,14 +120,14 @@
                     </div>
                 @endif
 
-                <form action="{{ route('dn.adm.sap.import') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('pcc.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <input type="file" name="file" class="form-control">
+                    <input type="file" name="pdf" accept=".pdf" class="form-control">
 
                     <br>
                     <div class="flex gap-4">
-                        <button class="btn btn-success"><i class="fa fa-file"></i> Import DN Data</button>
+                        <button class="btn btn-success"><i class="fa fa-file"></i> Import PCC (PDF)</button>
                         <a class="btn btn-warning font-bold flex gap-2 items-center justify-center" href="{{ url('export/transactions/sap') }}"><i class="fa fa-file"></i>Export Last 2 Days Transaction</a>
                     </div>
 
@@ -142,12 +142,13 @@
                 <table id="dnTable" class="table table-bordered mt-3">
                     <thead>
                         <tr>
-                            <th>Plant Code</th>
-                            <th>Shop Code</th>
-                            <th>Part Category</th>
-                            <th>Route</th>
-                            <th>LP</th>
-                            <th>Trip</th>
+                            <th>Date</th>
+                            <th>Slip</th>
+                            <th>Slip Seq</th>
+                            <th>Part No</th>
+                            <th>Part Name</th>
+                            <th>KD Lot No</th>
+                            {{-- <th>Trip</th>
                             <th>Vendor Code</th>
                             <th>Vendor Alias</th>
                             <th>Vendor Site</th>
@@ -164,10 +165,10 @@
                             <th>Qty Receive</th>
                             <th>Qty Balance</th>
                             <th>Cancel Status</th>
-                            <th>Remark</th>
+                            <th>Remark</th> --}}
                         </tr>
 
-                        <tr>
+                        {{-- <tr>
                             <th><input type="text" placeholder="Search Plant Code" /></th>
                             <th><input type="text" placeholder="Search Shop Code" /></th>
                             <th><input type="text" placeholder="Search Part Category" /></th>
@@ -191,7 +192,7 @@
                             <th><input type="text" placeholder="Search Qty Balance" /></th>
                             <th><input type="text" placeholder="Search Cancel Status" /></th>
                             <th><input type="text" placeholder="Search Remark" /></th>
-                        </tr>
+                        </tr> --}}
                     </thead>
                     <tbody>
 
@@ -200,61 +201,7 @@
             </div>
         </div>
     </div>
-    {{-- <!-- Modal for Preview -->
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="previewModalLabel">Preview Data DN</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-bordered" id="previewTable">
-                        <thead>
-                            <tr>
-                                <th>Plant Code</th>
-                                <th>Shop Code</th>
-                                <th>Part Category</th>
-                                <th>Route</th>
-                                <th>LP</th>
-                                <th>Trip</th>
-                                <th>Vendor Code</th>
-                                <th>Vendor Alias</th>
-                                <th>Vendor Site</th>
-                                <th>Order No</th>
-                                <th>PO Number</th>
-                                <th>Calc. Date</th>
-                                <th>Order Date</th>
-                                <th>Order Time</th>
-                                <th>Del. Date</th>
-                                <th>Del. Time</th>
-                                <th>Qty/Kbn</th>
-                                <th>Order(Kbn)</th>
-                                <th>Order(Pcs)</th>
-                                <th>Qty Receive</th>
-                                <th>Qty Balance</th>
-                                <th>Cancel Status</th>
-                                <th>Remark</th>
-                                <!-- Tambahkan kolom lain sesuai kebutuhan -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data akan diisi menggunakan JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <form id="importForm" action="{{ route('dn.adm.save') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="file" id="fileInput">
-                        <button type="submit" class="btn btn-success">Simpan Data ke Database</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-    <!-- Modal for Preview -->
+
     <div class="modal fade " id="previewModalX" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -266,7 +213,13 @@
                     <table class="table table-bordered" id="previewTable">
                         <thead>
                             <tr>
-                                <th>Plant Code</th>
+                                <th>Date</th>
+                                <th>Slip</th>
+                                <th>Slip Seq</th>
+                                <th>Part No</th>
+                                <th>Part Name</th>
+                                <th>KD Lot No</th>
+                                {{-- <th>Plant Code</th>
                                 <th>Shop Code</th>
                                 <th>Part Category</th>
                                 <th>Route</th>
@@ -288,7 +241,7 @@
                                 <th>Qty Receive</th>
                                 <th>Qty Balance</th>
                                 <th>Cancel Status</th>
-                                <th>Remark</th>
+                                <th>Remark</th> --}}
                                 <!-- Tambahkan kolom lain sesuai kebutuhan -->
                             </tr>
                         </thead>
@@ -330,97 +283,97 @@
                 serverSide: true,
                 ajax: "{{ route('dn.adm.sap.data') }}",
                 columns: [{
-                        data: 'plant_code',
-                        name: 'plant_code'
+                        data: 'date',
+                        name: 'date'
                     },
                     {
-                        data: 'shop_code',
-                        name: 'shop_code'
+                        data: 'slip_no',
+                        name: 'slip_no'
                     },
                     {
-                        data: 'part_category',
-                        name: 'part_category'
+                        data: 'pcc_count',
+                        name: 'pcc_count'
                     },
                     {
-                        data: 'route',
-                        name: 'route'
+                        data: 'part_no',
+                        name: 'part_no'
                     },
                     {
-                        data: 'lp',
-                        name: 'lp'
+                        data: 'part_name',
+                        name: 'part_name'
                     },
                     {
-                        data: 'trip',
-                        name: 'trip'
+                        data: 'kd_lot_no',
+                        name: 'kd_lot_no'
                     },
-                    {
-                        data: 'vendor_code',
-                        name: 'vendor_code'
-                    },
-                    {
-                        data: 'vendor_alias',
-                        name: 'vendor_alias'
-                    },
-                    {
-                        data: 'vendor_site',
-                        name: 'vendor_site'
-                    },
-                    {
-                        data: 'order_no',
-                        name: 'order_no'
-                    },
-                    {
-                        data: 'po_number',
-                        name: 'po_number'
-                    },
-                    {
-                        data: 'calc_date',
-                        name: 'calc_date'
-                    },
-                    {
-                        data: 'order_date',
-                        name: 'order_date'
-                    },
-                    {
-                        data: 'order_time',
-                        name: 'order_time'
-                    },
-                    {
-                        data: 'del_date',
-                        name: 'del_date'
-                    },
-                    {
-                        data: 'del_time',
-                        name: 'del_time'
-                    },
-                    {
-                        data: 'qty_kbn',
-                        name: 'qty_kbn'
-                    },
-                    {
-                        data: 'order_kbn',
-                        name: 'order_kbn'
-                    },
-                    {
-                        data: 'order_pcs',
-                        name: 'order_pcs'
-                    },
-                    {
-                        data: 'qty_receive',
-                        name: 'qty_receive'
-                    },
-                    {
-                        data: 'qty_balance',
-                        name: 'qty_balance'
-                    },
-                    {
-                        data: 'cancel_status',
-                        name: 'cancel_status'
-                    },
-                    {
-                        data: 'remark',
-                        name: 'remark'
-                    }
+                    // {
+                    //     data: 'vendor_code',
+                    //     name: 'vendor_code'
+                    // },
+                    // {
+                    //     data: 'vendor_alias',
+                    //     name: 'vendor_alias'
+                    // },
+                    // {
+                    //     data: 'vendor_site',
+                    //     name: 'vendor_site'
+                    // },
+                    // {
+                    //     data: 'order_no',
+                    //     name: 'order_no'
+                    // },
+                    // {
+                    //     data: 'po_number',
+                    //     name: 'po_number'
+                    // },
+                    // {
+                    //     data: 'calc_date',
+                    //     name: 'calc_date'
+                    // },
+                    // {
+                    //     data: 'order_date',
+                    //     name: 'order_date'
+                    // },
+                    // {
+                    //     data: 'order_time',
+                    //     name: 'order_time'
+                    // },
+                    // {
+                    //     data: 'del_date',
+                    //     name: 'del_date'
+                    // },
+                    // {
+                    //     data: 'del_time',
+                    //     name: 'del_time'
+                    // },
+                    // {
+                    //     data: 'qty_kbn',
+                    //     name: 'qty_kbn'
+                    // },
+                    // {
+                    //     data: 'order_kbn',
+                    //     name: 'order_kbn'
+                    // },
+                    // {
+                    //     data: 'order_pcs',
+                    //     name: 'order_pcs'
+                    // },
+                    // {
+                    //     data: 'qty_receive',
+                    //     name: 'qty_receive'
+                    // },
+                    // {
+                    //     data: 'qty_balance',
+                    //     name: 'qty_balance'
+                    // },
+                    // {
+                    //     data: 'cancel_status',
+                    //     name: 'cancel_status'
+                    // },
+                    // {
+                    //     data: 'remark',
+                    //     name: 'remark'
+                    // }
                 ]
             });
 

@@ -202,7 +202,7 @@
         </a>
     </div> --}}
     {{-- @include('components/navbar-component') --}}
-    <x-navbar-component>Kanban Matching</x-navbar-component>
+    <x-navbar-component>PCC Matching</x-navbar-component>
     {{-- <h1 class="text-center bg-red-400 text-white font-bold text-4xl inline-block mx-auto">Mas ipan</h1>
     <div class="w-8 h-8 bg-blue-400 rounded-full"></div> --}}
     <div class=" mt-2 md:pt-4">

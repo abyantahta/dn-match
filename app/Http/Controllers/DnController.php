@@ -10,6 +10,7 @@ use App\Imports\DemosImport;
 use App\Imports\DnADMImport;
 use App\Imports\DnADMKAPImport;
 use App\Imports\DnADMKEPImport;
+use App\Models\Pcc;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
@@ -39,25 +40,25 @@ class DnController extends Controller
 
     public function getDnADMSAPData()
     {
-        $query = DnADM::query(); // Ganti dengan model yang sesuai
+        $query = Pcc::query(); // Ganti dengan model yang sesuai
 
         return DataTables::of($query)
             ->make(true);
     }
-    public function getDnADMKEPData()
-    {
-        $query = DnADMKEP::query(); // Ganti dengan model yang sesuai
+    // public function getDnADMKEPData()
+    // {
+    //     $query = DnADMKEP::query(); // Ganti dengan model yang sesuai
 
-        return DataTables::of($query)
-            ->make(true);
-    }    
-    public function getDnADMKAPData()
-    {
-        $query = DnADMKAP::query(); // Ganti dengan model yang sesuai
+    //     return DataTables::of($query)
+    //         ->make(true);
+    // }    
+    // public function getDnADMKAPData()
+    // {
+    //     $query = DnADMKAP::query(); // Ganti dengan model yang sesuai
 
-        return DataTables::of($query)
-            ->make(true);
-    }
+    //     return DataTables::of($query)
+    //         ->make(true);
+    // }
 
     /**
      * @return \Illuminate\Support\Collection
