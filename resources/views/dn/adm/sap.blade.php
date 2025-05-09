@@ -5,13 +5,13 @@
     <title>DN ADM SAP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         crossorigin="anonymous">
-        {{-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> --}}
+    {{-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <!-- Tambahkan CSS DataTables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-        <link rel="icon" href="{{ asset('logo.png') }}">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="icon" href="{{ asset('logo.png') }}">
 
     <style>
         .maxWidth {
@@ -100,9 +100,30 @@
 
                 @session('success')
                     <div class="alert alert-success" role="alert">
-                        {{ $value }}
+                        {!! session('success') !!}
+                        @if (session('filename'))
+                            <div class="mt-2">
+                                <a href="{{ route('pcc.download', session('filename')) }}"
+                                    class="text-blue-500 hover:text-blue-700 underline">
+                                    Download modified PCC
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endsession
+                {{-- @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                    @if (session('filename'))
+                        <div class="mt-2">
+                            <a href="{{ route('pcc.download', session('filename')) }}" 
+                               class="text-blue-500 hover:text-blue-700 underline">
+                                Download Original PDF
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif --}}
                 @session('error')
                     <div class="alert alert-danger" role="alert">
                         {{ $value }}
@@ -128,7 +149,9 @@
                     <br>
                     <div class="flex gap-4">
                         <button class="btn btn-success"><i class="fa fa-file"></i> Import PCC (PDF)</button>
-                        <a class="btn btn-warning font-bold flex gap-2 items-center justify-center" href="{{ url('export/transactions/sap') }}"><i class="fa fa-file"></i>Export Last 2 Days Transaction</a>
+                        <a class="btn btn-warning font-bold flex gap-2 items-center justify-center"
+                            href="{{ url('export/transactions/sap') }}"><i class="fa fa-file"></i>Export Last 2 Days
+                            Transaction</a>
                     </div>
 
                 </form>
@@ -148,24 +171,6 @@
                             <th>Part No</th>
                             <th>Part Name</th>
                             <th>KD Lot No</th>
-                            {{-- <th>Trip</th>
-                            <th>Vendor Code</th>
-                            <th>Vendor Alias</th>
-                            <th>Vendor Site</th>
-                            <th>Order No</th>
-                            <th>PO Number</th>
-                            <th>Calc. Date</th>
-                            <th>Order Date</th>
-                            <th>Order Time</th>
-                            <th>Del. Date</th>
-                            <th>Del. Time</th>
-                            <th>Qty/Kbn</th>
-                            <th>Order(Kbn)</th>
-                            <th>Order(Pcs)</th>
-                            <th>Qty Receive</th>
-                            <th>Qty Balance</th>
-                            <th>Cancel Status</th>
-                            <th>Remark</th> --}}
                         </tr>
 
                         {{-- <tr>
@@ -219,30 +224,6 @@
                                 <th>Part No</th>
                                 <th>Part Name</th>
                                 <th>KD Lot No</th>
-                                {{-- <th>Plant Code</th>
-                                <th>Shop Code</th>
-                                <th>Part Category</th>
-                                <th>Route</th>
-                                <th>LP</th>
-                                <th>Trip</th>
-                                <th>Vendor Code</th>
-                                <th>Vendor Alias</th>
-                                <th>Vendor Site</th>
-                                <th>Order No</th>
-                                <th>PO Number</th>
-                                <th>Calc. Date</th>
-                                <th>Order Date</th>
-                                <th>Order Time</th>
-                                <th>Del. Date</th>
-                                <th>Del. Time</th>
-                                <th>Qty/Kbn</th>
-                                <th>Order(Kbn)</th>
-                                <th>Order(Pcs)</th>
-                                <th>Qty Receive</th>
-                                <th>Qty Balance</th>
-                                <th>Cancel Status</th>
-                                <th>Remark</th> --}}
-                                <!-- Tambahkan kolom lain sesuai kebutuhan -->
                             </tr>
                         </thead>
                         <tbody>

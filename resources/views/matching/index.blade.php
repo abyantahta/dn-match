@@ -360,7 +360,8 @@
                 {{-- </div> --}}
 
                 <div class="mt-5">
-                    <button type="submit" class="block mx-auto btn bg-green-600 text-white md:font-bold btn-sm :btn-md text-md md:text-xl py-1 px-8">Submit</button>
+                    <button type="submit" class="btn btn-success block mx-auto mt-2 py-1 px-8 text-md md:text-xl btn-sm :btn-md">Submit</button>
+                    {{-- <button type="submit" class="block mx-auto btn-success text-white md:font-bold btn-sm btn-md text-md md:text-xl text-md py-1 px-8">Submit</button> --}}
                 </div>
             </form>
             <form action="{{ route('matching.reset') }}" method="POST" style="display:inline;">
@@ -394,7 +395,7 @@
                     <th class="text-center">Seq FG</th>
                     <th class="text-center">Created At</th> --}}
                 </tr>
- 
+
                 </thead>
             </table>
     </div>
@@ -456,34 +457,7 @@
                     {
                         data: 'created_at'
                     },
-                    // {
-                    //     data: 'dn_status',
-                    //     orderable: false
-                    // },
-                    // {
-                    //     data: 'order_kbn'
-                    // },
-                    // {
-                    //     data: 'match_kbn'
-                    // },
-                    // {
-                    //     data: 'del_cycle'
-                    // },
-                    // {
-                    //     data: 'no_job'
-                    // },
-                    // {
-                    //     data: 'no_seq'
-                    // },
-                    // {
-                    //     data: 'no_job_fg'
-                    // },
-                    // {
-                    //     data: 'no_seq_fg'
-                    // },
-                    // {
-                    //     data: 'created_at'
-                    // }
+
                 ],
                 order: [
                     [1, 'asc']

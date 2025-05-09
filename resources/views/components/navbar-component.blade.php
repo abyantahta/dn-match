@@ -9,8 +9,9 @@
           <div class="ml-10 flex items-baseline space-x-4">
             <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
               <x-nav-link :active="request()->is('/')" href='/'>Home</x-nav-link>
+              <x-nav-link :active="request()->is('dn/adm/sap')" href='/dn/adm/sap'>Upload PCC</x-nav-link>
               {{-- <button class="bg-red-400">dsad</button> --}}
-                <div style="width: 140px" class="text-white relative ">
+                {{-- <div style="width: 140px" class="text-white relative ">
                   <button @click="DNnavOpen = !DNnavOpen" style="border-width: 1px; outline:none; border-color: #6b7280" class="overflow-hidden px-3 py-2 border-gray-500 rounded-full text-left w-full text-sm font-medium flex items-center gap-2 text-white" href='/dn/adm/sap'>
                     DN ADM 
                     <i :class="{ '-rotate-90': !DNnavOpen, '': DNnavOpen}" class="duration-200 fa-solid fa-caret-down">
@@ -18,14 +19,14 @@
                   </button>
 
                     <div x-show="DNnavOpen" :class="{'scale-y-0 duration-200 opacity-0': !DNnavOpen,'scale-y-100 origin-top duration-200 opacity-100': DNnavOpen}" style="top: 45px" class="bg-gray-800 h-fit pb-3 absolute left-0 w-full rounded-br-md rounded-bl-md ">
-                  {{-- <div  :class="{'scale-y-0 duration-100 origin-top opacity-0': !DNnavOpen,'scale-y-100 origin-top opacity-100 duration-200': DNnavOpen}" class="bg-gray-800 h-fit pb-3 absolute top-[50px] left-0 w-full rounded-br-md rounded-bl-md "> --}}
+                  <div  :class="{'scale-y-0 duration-100 origin-top opacity-0': !DNnavOpen,'scale-y-100 origin-top opacity-100 duration-200': DNnavOpen}" class="bg-gray-800 h-fit pb-3 absolute top-[50px] left-0 w-full rounded-br-md rounded-bl-md ">
                     <div class="flex flex-col"> 
                       <x-nav-link :active="request()->is('dn/adm/sap')" href='/dn/adm/sap'>DN ADM SAP</x-nav-link>
                       <x-nav-link :active="request()->is('dn/adm/kep')" href='/dn/adm/kep'>DN ADM KEP</x-nav-link>
                       <x-nav-link :active="request()->is('dn/adm/kap')" href='/dn/adm/kap'>DN ADM KAP</x-nav-link>
                     </div>
                   </div>
-                </div>
+                </div> --}}
                 {{-- <button @click="DNnavOpen = !DNnavOpen" type="button" class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white " aria-controls="mobile-menu" aria-expanded="false">
                   <span class="absolute -inset-0.5"></span>
                   <span class="sr-only">Open main menu</span>
@@ -84,9 +85,10 @@
     <div class="flex flex-col space-y-1 px-2 pb-3 pt-2 sm:px-3 bg-gray-800">
       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
               <x-nav-link :active="request()->is('/')" href='/'>Home</x-nav-link>
-              <x-nav-link :active="request()->is('dn/adm/sap')" href='/dn/adm/sap'>DN ADM SAP</x-nav-link>
+              <x-nav-link :active="request()->is('dn/adm/sap')" href='/dn/adm/sap'>Upload PCC</x-nav-link>
+              {{-- <x-nav-link :active="request()->is('dn/adm/sap')" href='/dn/adm/sap'>DN ADM SAP</x-nav-link>
               <x-nav-link :active="request()->is('dn/adm/kep')" href='/dn/adm/kep'>DN ADM KEP</x-nav-link>
-              <x-nav-link :active="request()->is('dn/adm/kap')" href='/dn/adm/kap'>DN ADM KAP</x-nav-link>
+              <x-nav-link :active="request()->is('dn/adm/kap')" href='/dn/adm/kap'>DN ADM KAP</x-nav-link> --}}
     </div>
   </div>
   </nav>

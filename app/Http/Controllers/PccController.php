@@ -40,13 +40,36 @@ class PccController extends Controller
             File::delete(File::files($folderPath)); // Delete all files
         }
 
+        if (!Storage::disk('public')->exists('pdfs')) {
+            Storage::disk('public')->makeDirectory('pdfs');
+        }
+    
+        // Check and create 'qrcodes' folder if it doesn't exist
+        if (!Storage::disk('public')->exists('qrcodes')) {
+            Storage::disk('public')->makeDirectory('qrcodes');
+        }
+        if (!Storage::disk('public')->exists('modified')) {
+            Storage::disk('public')->makeDirectory('modified');
+        }
+    
+
+        // Storage::disk('public/fpds')->delete();
+        Storage::disk('public')->delete(Storage::disk('public')->files('pdfs'));
+        Storage::disk('public')->delete(Storage::disk('public')->files('qrcodes'));
+        Storage::disk('public')->delete(Storage::disk('public')->files('modified'));
+
+
         if ($request->hasFile('pdf')) {
             $file = $request->file('pdf');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('pdfs', $filename, 'public');
+            $file->storeAs('/pdfs', $filename, 'public');
 
             $pdf = new Fpdi();
             $pageCount = $pdf->setSourceFile(Storage::disk('public')->path('pdfs/'.$filename));
+
+            $pcc_saved = 0;
+            $pcc_duplicate = 0;
+            $pcc_total = 0;
             for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
                 $parser = new Parser();
                 $pdf_parser = $parser->parseFile($file);
@@ -55,11 +78,16 @@ class PccController extends Controller
                 $collectionPCC = collect($arrText);
                 $collectionPCC = $collectionPCC->forget(0)->forget(41)->values();
                 // $arrText = array_shift($arrText);
-                $partNoValueArray = array();
-                $i = 0;
                 // dd($collectionPCC);
-
+                if(!($collectionPCC[1]==="FROM:" && is_int($collectionPCC->count())/42)){
+                    return back()->with('error','PDF tidak sesuai standard, silahkan upload PDF yang sesuai');
+                }
+                $partNoValueArray = array();
+                // $i = 0;
+                // dd($collectionPCC);
+                
                 // while($i<$collectionPCC->count()){
+                    
                     $pccInOnePage = ($collectionPCC->count())/42;
 
                     // dd($arrText[40],$qty_packingVar,$slip_noVar,$pcc_countVar);
@@ -90,6 +118,7 @@ class PccController extends Controller
                             $hns = $collectionPCC[34+$pccCounter*42];
                             $slip_barcode = $collectionPCC[39+$pccCounter*42];
 
+                            $pcc_total++;
                             array_push($partNoValueArray,$slip_noVar);
                             $existedPcc = Pcc::where('slip_barcode',$slip_barcode)->get()->first();
                             if(!$existedPcc){
@@ -115,16 +144,12 @@ class PccController extends Controller
                                     'time'=> Carbon::parse($time),
                                     'hns'=> $hns,
                                 ]);
+                                $pcc_saved++;
+                            }else{
+                                $pcc_duplicate++;
                             }
                             // dd('halo');
                     }
-                    
-                    // $i = 
-                    // if($i==15){
-                    //     $i++; 
-                    // }
-                    // $i += 42;
-                // };
                 foreach ($partNoValueArray as $partNo){
                     
                     $writer = new PngWriter();
@@ -159,104 +184,41 @@ class PccController extends Controller
                     $pdf->Image(Storage::disk('public')->path('qrcodes/'.$partNo.'.png'),55,$offsety,12,0,'PNG');
                     $offsety +=70;
                 }
-                // $pdf->Image(Storage::disk('public')->path('qr.png'),55,131,12,0,'PNG');
-                // $pdf->Image(Storage::disk('public')->path('qr.png'),55,201,12,0,'PNG');
-                // $pdf->Image(Storage::disk('public')->path('qr.png'),55,271,12,0,'PNG');
 
             }
-            // $pdf->Output('S');
+
+            $pdf->Output(Storage::disk('public')->path('modified/'.$filename),'F');
+            // session()->flash('success', 'PDF generated successfully!');
+
             // Output the modified PDF
+            // return response($pdf->Output('S'), 200)
+            //     ->header('Content-Type', 'application/pdf')
+            //     ->header('Content-Disposition', 'attachment; filename="modified_' . $filename . '"');
+            // dd($filename);
+            return back()->with('success', 'PDF uploaded successfully! <br> Total PCC : '.$pcc_total.' PCC Tersimpan : '.$pcc_saved.' PCC Duplikat: '.$pcc_duplicate)
+                ->with('filename', $filename);
+        }
+        return back()->with('error', 'No file was uploaded.');
+    }
+    public function download($filename)
+    {
+        $path = 'modified/' . $filename;
+        // dd($path);
+        if (Storage::disk('public')->exists($path)) {
+            // Create new PDF instance
+            $pdf = new Fpdi();
+            $pdf->AddPage();
+            $pdf->setSourceFile(Storage::disk('public')->path($path));
+            $tplId = $pdf->importPage(1);
+            $pdf->useTemplate($tplId);
+
             return response($pdf->Output('S'), 200)
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'attachment; filename="modified_' . $filename . '"');
-
-
-            return back()->with('success', 'PDF uploaded successfully!')
-                ->with('filename', $filename);
         }
 
-        // try {
-        //     Excel::import(new DnADMImport, $request->file('file'));
-        //     return back()->with('success', 'DNs imported successfully.');
-        // } catch (\Illuminate\Database\QueryException $e) {
-        //     // Tangkap kesalahan SQL dan tampilkan pesan kesalahan
-        //     $errorMessage = $e->getMessage();
-        //     return back()->with('error', 'SQL Error: ' . $errorMessage);
-        // } catch (\Exception $e) {
-        //     // Tangkap kesalahan umum lainnya
-        //     $errorMessage = $e->getMessage();
-        //     return back()->with('error', 'Error: ' . $errorMessage);
-        // }
-        return back()->with('error', 'No file was uploaded.');
+        return back()->with('error', 'File not found.');
     }
 
-    // public function download($filename)
-    // {
-    //     $path = 'pdfs/' . $filename;
-
-    //     if (Storage::disk('public')->exists($path)) {
-    //         // Create new PDF instance
-    //         $pdf = new Fpdi();
-            
-    //         // $text = (new Pdf(Storage::disk('public')->path($path)))
-    //         // ->setPdf(Storage::disk('public')->path($path))
-    //         // ->text();
-
-    //         // dd($text);
-    //         // dd(Pdf::getText(Storage::disk('public')->path($path)));
-    //         // Get the number of pages in the original PDF
-    //         $pageCount = $pdf->setSourceFile(Storage::disk('public')->path($path));
-    //         // dd("halo");
-
-    //         // Import each page and add drawing
-    //         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-    //             // Import page
-    //             $templateId = $pdf->importPage($pageNo);
-    //             $size = $pdf->getTemplateSize($templateId);
-
-    //             // Add a new page with the same size
-    //             $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-
-    //             // Use the imported page
-    //             $pdf->useTemplate($templateId);
-
-    //             // Add drawing at top-left corner (coordinates: x=10, y=10)
-    //             $pdf->SetDrawColor(255, 0, 0); // Red color
-    //             $pdf->SetLineWidth(2);
-    //             $pdf->SetXY(150, 30);
-    //             // $pdf->Write(0, 'This is just a simple text');
-
-    //             $pdf->SetFont('Helvetica');
-    //             $pdf->SetTextColor(255, 0, 0);
-
-    //             $pdf->SetXY(150, 100);
-    //             $pdf->Write(0, 'This is just a simple text');
-    //             // Draw a rectangle
-    //             // $pdf->SetXY(0,100);
-    //             // $pdf->Rect(10, 10, 50, 30);
-    //             $pdf->Image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/1024px-QR_Code_Example.svg.png',60,57,12,0,'PNG');
-    //             $pdf->Image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/1024px-QR_Code_Example.svg.png',60,123,12,0,'PNG');
-    //             $pdf->Image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/1024px-QR_Code_Example.svg.png',60,189,12,0,'PNG');
-    //             $pdf->Image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/1024px-QR_Code_Example.svg.png',60,255,12,0,'PNG');
-
-    //             //offetX,offsetY,ratioSize,nggaktauapa
-    //             // $pdf->SetXY(30,120);
-    //             // Draw a circle
-    //             // $pdf->Circle(35, 25, 15);
-
-    //             // Add text
-    //             $pdf->SetXY(150, 150);
-    //             $pdf->SetTextColor(20, 0, 255); // Blue color
-    //             $pdf->SetFont('Arial', 'B', 12);
-    //             $pdf->Write(15, 20, 'Sample');
-    //         }
-
-    //         // Output the modified PDF
-    //         return response($pdf->Output('S'), 200)
-    //             ->header('Content-Type', 'application/pdf')
-    //             ->header('Content-Disposition', 'attachment; filename="modified_' . $filename . '"');
-    //     }
-
-    //     return back()->with('error', 'File not found.');
-    // }
+    
 }

@@ -36,16 +36,16 @@ Route::get('/dashboard/data', [DashboardController::class, 'getData'])->name('da
 //     return view('welcome');
 // });
 
-Route::post('/order-deliveries/import', [OrderDeliveryController::class, 'importOrderDelivery'])->name('import.order.delivery');
-// Route::get('/order-deliveries', [OrderDeliveryController::class, 'index'])->name('order.deliveries');
-Route::get('/dn-page', [OrderDeliveryController::class, 'index']);
-// Route::post('/import-order-delivery', [OrderDeliveryController::class, 'import'])->name('import.order.delivery');
-// Route::get('/order-deliveries/data', [OrderDeliveryController::class, 'getData'])->name('order.deliveries.data');
-Route::get('/getdn', [OrderDeliveryController::class, 'getDn'])->name('getdn');
+// Route::post('/order-deliveries/import', [OrderDeliveryController::class, 'importOrderDelivery'])->name('import.order.delivery');
+// // Route::get('/order-deliveries', [OrderDeliveryController::class, 'index'])->name('order.deliveries');
+// Route::get('/dn-page', [OrderDeliveryController::class, 'index']);
+// // Route::post('/import-order-delivery', [OrderDeliveryController::class, 'import'])->name('import.order.delivery');
+// // Route::get('/order-deliveries/data', [OrderDeliveryController::class, 'getData'])->name('order.deliveries.data');
+// Route::get('/getdn', [OrderDeliveryController::class, 'getDn'])->name('getdn');
 
-Route::get('/demos', [DemoController::class, 'index'])->name('demos.index');
-Route::post('/demos-import', [DemoController::class, 'importDemo'])->name('demos.import');
-Route::get('/demos/data', [DemoController::class, 'getData'])->name('demos.data');
+// Route::get('/demos', [DemoController::class, 'index'])->name('demos.index');
+// Route::post('/demos-import', [DemoController::class, 'importDemo'])->name('demos.import');
+// Route::get('/demos/data', [DemoController::class, 'getData'])->name('demos.data');
 
 
 Route::get('/dn/adm/sap', [DnController::class, 'sap'])->name('dn.adm.sap');
@@ -62,3 +62,14 @@ Route::post('/dn/adm/save', [DnController::class, 'saveDnADM'])->name('dn.adm.sa
 Route::get('/pcc/upload', [PccController::class, 'showUploadForm'])->name('pcc.upload.form');
 Route::post('/pcc/upload', [PccController::class, 'upload'])->name('pcc.upload');
 Route::get('/pcc/download/{filename}', [PccController::class, 'download'])->name('pcc.download');
+// Route::post('/generate-pdf', [PccController::class, 'generatePdf']);
+
+// Route::get('/download-pdf/{file}', function ($file) {
+//     $filePath = storage_path("app/public/{$file}");
+
+//     // dd(file_exists($filePath));
+//     if (!file_exists($filePath)) {
+//         return redirect()->back()->with('error', 'Download failed!');
+//     }
+//     return response()->file($filePath);
+// })->name('download.pdf');
