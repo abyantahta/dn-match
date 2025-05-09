@@ -109,6 +109,7 @@ class PccController extends Controller
                                     'pcc_count'=> $pcc_count,
                                     'qty_packing'=> $qty_packing,
                                     'ship'=> $ship,
+                                    // 'slip_barcode'=> $slip_barcode,
                                     'slip_barcode'=> $slip_barcode,
                                     'date'=> Carbon::createFromFormat('d-m', $date),
                                     'time'=> Carbon::parse($time),

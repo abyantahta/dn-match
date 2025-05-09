@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode Matching</title>
+    <title>PCC Matching</title>
 
     <!-- Add Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -252,15 +252,15 @@
                 <div class="flex w-full gap-2 xl:gap-10 md:mb-4">
                     <div class="w-1/2">
                         <div class="">
-                            <label for="no_job" class="form-label md:text-xl text-xs font-bold">JOB/PART NO</label>
+                            <label for="no_job" class="form-label md:text-xl text-xs font-bold">BARCODE PCC</label>
                             <input type="text" class="form-control  form-input h-6 text-sm md:h-8 md:text-base" id="no_job" name="no_job"
-                                value="{{ session('no_job') }}" disabled>
+                                value="{{ session('slip_barcode') }}" disabled>
                                 {{-- <h2 class="">halo semuanya</h2> --}}
                         </div>
                     </div>
                     <div class="w-1/2">
                         <div class="">
-                            <label for="no_job_fg" class="form-label md:text-xl text-xs font-bold">JOB/PART FG</label>
+                            <label for="no_job_fg" class="form-label md:text-xl text-xs font-bold">BARCODE FG</label>
                             <div class="input-group">
                                 {{-- @if (session('message-no-match'))
                                     <span class="input-group-text bg-danger">
@@ -268,8 +268,8 @@
                                     </span>
                                 @endif --}}
                                 <input type="text"
-                                    class="form-control form-input h-6 text-sm md:h-8 md:text-base @if (session('message-no-match')) is-invalid @endif"
-                                    id="no_job_fg" name="no_job_fg" value="{{ session('no_job_fg') }}" disabled>
+                                    class="form-control form-input h-6 text-sm md:h-8 md:text-base"
+                                    id="no_job_fg" name="no_job_fg" value="{{ session('barcode_fg') }}" disabled>
                             </div>
                         </div>
                     </div>
@@ -279,27 +279,27 @@
                     <div class="flex w-full gap-2 md:gap-16 md:mb-4">
                         <div class="w-1/2">
                             <div class="">
-                                <label for="barcode_cust" class="form-label md:text-xl text-xs font-bold">BARCODE CUST</label>
+                                <label for="barcode_cust" class="form-label md:text-xl text-xs font-bold">PART NO</label>
                                 <input type="text" class="form-control form-input md:h-8 md:text-base h-6 text-sm" id="barcode_cust" name="barcode_cust"
-                                    value="{{ session('barcode_cust') }}" disabled>
+                                    value="{{ session('part_no') }}" disabled>
                             </div>
                         </div>
                         <div class="w-1/2">
                             <div class="">
-                                <label for="barcode_fg" class="form-label md:text-xl text-xs font-bold">BARCODE FG</label>
-                                <input type="text" class="form-control  form-input h-6 text-sm md:h-8 md:text-base-disabled" id="barcode_fg"
-                                    name="barcode_fg" value="{{ session('barcode_fg') }}" disabled>
+                                <label for="barcode_fg" class="form-label md:text-xl text-xs font-bold">PART NO FG</label>
+                                <input type="text" class="form-control  form-input h-6 text-sm md:h-8 md:text-base-disabled  @if (session('message-no-match')) is-invalid @endif" id="barcode_fg"
+                                    name="barcode_fg" value="{{ session('part_no_fg') }}" disabled>
                             </div>
     
                         </div>
                     </div>
                     {{-- <div class="">
                     </div> --}}
-                    <div class="w-full md:mb-4  gap-2 md:gap-16 flex">
+                    {{-- <div class="w-full md:mb-4  gap-2 md:gap-16 flex">
                         <div class="w-1/2 ">
-                                <label for="no_dn" class="form-label md:text-xl text-xs font-bold">DN NUMBER</label>
+                                <label for="no_dn" class="form-label md:text-xl text-xs font-bold">SLIP NO</label>
                                 <input type="text" class="form-control w-full form-input h-6 text-sm md:h-8 md:text-base clearleft clearright"
-                                    id="no_dn" name="no_dn" value="{{ session('no_dn') }}" disabled>
+                                    id="no_dn" name="no_dn" value="{{ session('slip_no') }}" disabled>
                         </div>
                         <div class="w-1/2 flex gap-2 md:gap-16 ">
                             <div class="w-1/2">
@@ -318,7 +318,7 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> --}}
 
                     <div class="flex w-full gap-2 md:gap-16 md:mb-4">
                         <div class="w-1/2">
@@ -326,7 +326,7 @@
                             <div class="">
                                 <label for="no_seq" class="form-label md:text-xl text-xs font-bold">SEQ NO</label>
                                 <input type="text" class="form-control form-input h-6 text-sm md:h-8 md:text-base" id="no_seq" name="no_seq"
-                                    value="{{ session('no_seq') }}" disabled>
+                                    value="{{ session('pcc_seq') }}" disabled>
                             </div>
                         </div>
                         <div class="w-1/2">
@@ -337,7 +337,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="">
                             <div class="">
                                 <label for="dn_status" class=" form-label text-xs md:text-xl font-bold text-center md:text-left block mx-auto mb-3">DN
@@ -349,26 +349,26 @@
                                         {{ session('dn_status') }}
                                     </span>
                                 </div>
-                                {{-- <input type="text" class="form-control  form-input clearleft clearright"
-                                    id="dn_status" name="dn_status" value="{{ session('dn_status') }}" disabled> --}}
+                                <input type="text" class="form-control  form-input clearleft clearright"
+                                    id="dn_status" name="dn_status" value="{{ session('dn_status') }}" disabled>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
 
                 {{-- </div> --}}
 
-                <div class="mt-3">
-                    <button type="submit" class="block mx-auto btn btn-primary btn-sm :btn-md">Submit</button>
+                <div class="mt-5">
+                    <button type="submit" class="block mx-auto btn bg-green-600 text-white md:font-bold btn-sm :btn-md text-md md:text-xl py-1 px-8">Submit</button>
                 </div>
-        </form>
+            </form>
+            <form action="{{ route('matching.reset') }}" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn btn-secondary block mx-auto mt-2 btn-sm :btn-md">Reset Session</button>
+            </form>
 
         <!-- Tombol Reset -->
-        <form action="{{ route('matching.reset') }}" method="POST" style="display:inline;">
-            @csrf
-            <button type="submit" class="btn btn-secondary block mx-auto mt-2 btn-sm :btn-md">Reset Session</button>
-        </form>
 
 
     </div></br>
@@ -379,12 +379,12 @@
                 <thead class="w-full">
                 <tr>
                     <th class="text-center">No</th>
-                    <th class="text-center">Plant</th>
-                    <th class="text-center">Kanban ADM</th>
-                    <th class="text-center">Label SDI</th>
+                    <th class="text-center">Slip Barcode</th>
                     <th class="text-center">Status</th>
-                    <th class="text-center">DN Number</th>
-                    <th class="text-center">DN Status</th>
+                    <th class="text-center">Part No PCC</th>
+                    <th class="text-center">Part No FG</th>
+                    <th class="text-center">Created At</th>
+                    {{-- <th class="text-center">DN Status</th>
                     <th class="text-center">Order Kbn</th>
                     <th class="text-center">Match Kbn</th>
                     <th class="text-center">Cycle</th>
@@ -392,7 +392,7 @@
                     <th class="text-center">Seq</th>
                     <th class="text-center">Job/Part No FG</th>
                     <th class="text-center">Seq FG</th>
-                    <th class="text-center">Created At</th>
+                    <th class="text-center">Created At</th> --}}
                 </tr>
  
                 </thead>
@@ -438,52 +438,52 @@
                         }
                     },
                     {
-                        data: 'plant',
-                        width:'100px'
+                        data: 'slip_barcode',
+                        // width:'100px'
                     },
                     {
-                        data: 'barcode_cust'
+                        data: 'status'
                     },
                     {
-                        data: 'barcode_fg',
+                        data: 'part_no_pcc',
                         className: 'nowrap',
-                        width: '100px'
+                        // width: '100px'
                     },
                     {
-                        data: 'status',
+                        data: 'part_no_fg',
                         orderable: false
-                    },
-                    {
-                        data: 'no_dn'
-                    },
-                    {
-                        data: 'dn_status',
-                        orderable: false
-                    },
-                    {
-                        data: 'order_kbn'
-                    },
-                    {
-                        data: 'match_kbn'
-                    },
-                    {
-                        data: 'del_cycle'
-                    },
-                    {
-                        data: 'no_job'
-                    },
-                    {
-                        data: 'no_seq'
-                    },
-                    {
-                        data: 'no_job_fg'
-                    },
-                    {
-                        data: 'no_seq_fg'
                     },
                     {
                         data: 'created_at'
-                    }
+                    },
+                    // {
+                    //     data: 'dn_status',
+                    //     orderable: false
+                    // },
+                    // {
+                    //     data: 'order_kbn'
+                    // },
+                    // {
+                    //     data: 'match_kbn'
+                    // },
+                    // {
+                    //     data: 'del_cycle'
+                    // },
+                    // {
+                    //     data: 'no_job'
+                    // },
+                    // {
+                    //     data: 'no_seq'
+                    // },
+                    // {
+                    //     data: 'no_job_fg'
+                    // },
+                    // {
+                    //     data: 'no_seq_fg'
+                    // },
+                    // {
+                    //     data: 'created_at'
+                    // }
                 ],
                 order: [
                     [1, 'asc']

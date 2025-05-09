@@ -30,6 +30,7 @@ return new class extends Migration
             $table->integer('qty_packing');
             $table->integer('ship');
             $table->string('slip_barcode');
+            $table->boolean('isMatch')->default(false);
             $table->date('date');
             $table->time('time');
             $table->string('hns');
