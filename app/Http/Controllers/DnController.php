@@ -11,7 +11,9 @@ use App\Imports\DnADMImport;
 use App\Imports\DnADMKAPImport;
 use App\Imports\DnADMKEPImport;
 use App\Models\Pcc;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -23,8 +25,11 @@ class DnController extends Controller
      */
     public function sap()
     {
-        $dnData = DnADM::get();
-        return view('dn.adm.sap', compact('dnData'));
+        $dateFilter = request('date_filter', '');  // default value, for instance
+        $statusFilter = request('status_filter', '');
+    
+        $dnData = Pcc::get();
+        return view('dn.adm.sap', compact('dnData','dateFilter','statusFilter'));
     }
     // public function kep()
     // {
@@ -38,13 +43,49 @@ class DnController extends Controller
     // }
 
 
-    public function getDnADMSAPData()
+    public function getDnADMSAPData(Request $request)
     {
+        // dd();
         $query = Pcc::query(); // Ganti dengan model yang sesuai
+        if($request->created_at){
+            $query->whereDate('date',$request->created_at);
+        }
+        // if (!empty($request->pccStatus)) {
+            if ($request->pccStatus == 'matched') {
+                $query->where('isMatch', 1);
+            } else if ($request->pccStatus == 'unmatched') {
+                $query->where('isMatch', 0);
+            }
+        // }
+        // dd($request->pccStatus);
+        // Log::info('Request Data:'.$request->pccStatus. 'Date: '. $request->created_at);
+
+        
+        // if($request->pcc_status =='matched'){
+        //     // dd('sini');
+        //     $query->where('isMatch',1);
+        // }else if($request->pcc_status == 'unmatched'){
+        //     $query->where('isMatch',0);
+        // }
+
+        // return DataTables::of($query)
+        //     ->make(true);
 
         return DataTables::of($query)
-            ->make(true);
+        ->addIndexColumn()
+        ->editColumn('isMatch', function ($transaction) {
+            return '<span class="badge text-center ' . ($transaction->isMatch? 'bg-success' : 'bg-danger') . '">' . ($transaction->isMatch? 'Matched' : 'Unmatched') . '</span>';
+        })
+        ->rawColumns(['isMatch']) // Jangan lupa tambahkan 'created_at' di sini
+        ->make(true);
     }
+    // public function getDnADMSAPData(Request $request, DataTables $dataTables)
+    // {
+    //     // dd($request->created_at);
+    //     $query = Pcc::query(); // Ganti dengan model yang sesuai
+
+    //     return $dataTables->eloquent($query)->make(true);
+    // }
     // public function getDnADMKEPData()
     // {
     //     $query = DnADMKEP::query(); // Ganti dengan model yang sesuai

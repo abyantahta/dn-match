@@ -20,49 +20,69 @@
     {{-- <title>Document</title> --}}
 </head>
 <body>
-        <table class="w-fit text-center" id="transactionsTable">
-            <thead>
+    <?php
+    // dd($query);
+    ?>
+    <h1>PCC STATUS</h1>
+    <table class="w-fit text-center" id="pccTable">
+        <thead>
+            <tr>
+                <th class="table-center">No</th>
+                <th class="table-center">Status</th>
+                <th class="text-center">Slip</th>
+                <th class="text-center">Part No</th>
+                <th class="text-center">Part Name</th>
+                <th class="text-center">KD Lot No</th>
+            </tr>
+            {{-- {{ dd($transactions) }} --}}
+            @foreach ( $query as $q )
                 <tr>
-                    <th class="table-center">No</th>
-                    <th class="table-center">Plant</th>
-                    <th class="text-center">Kanban ADM</th>
-                    <th class="text-center">Label SDI</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">DN Number</th>
-                    <th class="text-center">DN Status</th>
-                    <th class="text-center">Order Kbn</th>
-                    <th class="text-center">Match Kbn</th>
-                    <th class="text-center">Del. Cycle</th>
-                    <th class="text-center">Job/Part No</th>
-                    <th class="text-center">Seq</th>
-                    <th class="text-center">Job/Part No FG</th>
-                    <th class="text-center">Seq FG</th>
-                    <th class="text-center">Created At</th>
+                    <td class="table-center">{{ ($loop->index)+1 }}</td>
+                    <td class="table-center">{{ $q->isMatch?"Matched":"Unmatched" }}</td>
+                    <td class="text-center">{{ $q->slip_barcode }}</td>
+                    <td class="text-center">{{ $q->part_no }}</td>
+                    <td class="text-center">{{ $q->part_name }}</td>
+                    <td class="text-center">{{ $q->kd_lot_no }}</td>
+
+                    
                 </tr>
-                {{-- {{ dd($transactions) }} --}}
-                @foreach ( $transactions as $transaction )
-                    <tr>
-                        <td class="table-center">{{ $transaction->id }}</td>
-                        <td class="table-center">{{ $transaction->plant }}</td>
-                        <td class="text-center">{{ $transaction->barcode_cust }}</td>
-                        <td class="text-center">{{ $transaction->barcode_fg }}</td>
-                        <td class="text-center">{{ $transaction->status }}</td>
-                        <td class="text-center">{{ $transaction->no_dn }}</td>
-                        <td class="text-center">{{ $transaction->dn_status }}</td>
-                        <td class="text-center">{{ $transaction->order_kbn }}</td>
-                        <td class="text-center">{{ $transaction->match_kbn }}</td>
-                        <td class="text-center">{{ $transaction->del_cycle }}</td>
-                        <td class="text-center">{{ $transaction->no_job }}</td>
-                        <td class="text-center">{{ $transaction->no_seq }}</td>
-                        <td class="text-center">{{ $transaction->no_job_fg }}</td>
-                        <td class="text-center">{{ $transaction->no_seq_fg }}</td>
-                        <td class="text-center">{{ $transaction->created_at }}</td>
-                        
-                    </tr>
-                @endforeach
-                {{-- {{ dd($transactions) }}; --}}
- 
-            </thead>
-        </table>
+            @endforeach
+            {{-- {{ dd($transactions) }}; --}}
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+        </thead>
+    </table>
+<h1>TRANSACTION HISTORY</h1>
+<table class="w-fit text-center" id="transactionTable">
+    <thead>
+        <tr>
+            <th class="table-center">No</th>
+            <th class="table-center">Status</th>
+            <th class="text-center">Slip</th>
+            <th class="text-center">Part No PCC</th>
+            <th class="text-center">Part No FG</th>
+            <th class="text-center">Seq Label FG</th>
+            <th class="text-center">Matching Date</th>
+        </tr>
+        {{-- {{ dd($transactions) }} --}}
+        @foreach ( $transactions as $transaction )
+            <tr>
+                <td class="table-center">{{ ($loop->index)+1 }}</td>
+                <td class="text-center">{{ $transaction->status }}</td>
+                <td class="text-center">{{ $transaction->slip_barcode }}</td>
+                <td class="text-center">{{ $transaction->part_no_pcc }}</td>
+                <td class="text-center">{{ $transaction->part_no_fg }}</td>
+                <td class="text-center">{{ $transaction->seq_fg }}</td>
+                <td class="text-center">{{ $transaction->created_at }}</td>
+                
+            </tr>
+        @endforeach
+
+        {{-- {{ dd($transactions) }}; --}}
+
+    </thead>
+</table>
+        
 </body>
 </html>

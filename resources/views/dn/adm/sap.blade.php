@@ -95,8 +95,9 @@
 
     <div class="container px-0 mt-2 ">
         <div class=" w-full  ">
-            <h3 class="card-header p-3 text-3xl"><i class="fa fa-star"></i> PCC MATCHING</h3>
-            <div class="card-body">
+            {{-- <h3 class="card-header p-3 text-3xl"><i class="fa fa-star"></i> PCC MATCHING</h3> --}}
+            <div class="card-body px-0 mt-7">
+                <h2 class="text-2xl font-bold  mb-2">Upload PCC</h2>
 
                 @session('success')
                     <div class="alert alert-success" role="alert">
@@ -111,19 +112,6 @@
                         @endif
                     </div>
                 @endsession
-                {{-- @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                    @if (session('filename'))
-                        <div class="mt-2">
-                            <a href="{{ route('pcc.download', session('filename')) }}" 
-                               class="text-blue-500 hover:text-blue-700 underline">
-                                Download Original PDF
-                            </a>
-                        </div>
-                    @endif
-                </div>
-            @endif --}}
                 @session('error')
                     <div class="alert alert-danger" role="alert">
                         {{ $value }}
@@ -149,9 +137,9 @@
                     <br>
                     <div class="flex gap-4">
                         <button class="btn btn-success"><i class="fa fa-file"></i> Import PCC (PDF)</button>
-                        <a class="btn btn-warning font-bold flex gap-2 items-center justify-center"
-                            href="{{ url('export/transactions/sap') }}"><i class="fa fa-file"></i>Export Last 2 Days
-                            Transaction</a>
+                        <a class="exportButton btn btn-warning font-bold flex gap-2 items-center justify-center"
+                            href="{{ url('export/transactions/sap?date_filter=' . $dateFilter . '$statusFilter=' . $statusFilter) }}"><i
+                                class="fa fa-file"></i>Export Transaction</a>
                     </div>
 
                 </form>
@@ -160,11 +148,38 @@
 
 
         </div>
+        <div class="flex justify-end gap-3 mb-3">
+            <div class="w-28 max-w-sm min-w-[200px]">
+                <div class="relative">
+                    <input type="date" value="{{ $dateFilter ?? '' }}" placeholder=" Select Delivery Date"
+                        class="tracking-widest w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+                        id="filter-date">
+
+                </div>
+            </div>
+            <div class="w-full max-w-sm min-w-[200px]">
+                <div class="relative">
+                    <select value="{{ $statusFilter ?? '' }}" id="statusFilter"
+                        class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer">
+                        <option value="">Select Status</option>
+                        <option value='matched'>Matched</option>
+                        <option value='unmatched'>Unmatched</option>
+                    </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2"
+                        stroke="currentColor" class="h-5 w-5 ml-1 absolute top-2.5 right-2.5 text-slate-700">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                    </svg>
+                </div>
+            </div>
+            {{-- <input type="date" placeholder="Select Delivery Date" class="ml-auto border-3 text-md tracking-wider border-gray-500 py-2 px-4 rounded-md" id="filter-date"> --}}
+        </div>
         <div class="card  " style="margin-top:5px;">
             <div class="card-body overflow-x-scroll">
                 <table id="dnTable" class="table table-bordered mt-3">
                     <thead>
                         <tr>
+                            <th>Status</th>
                             <th>Date</th>
                             <th>Slip</th>
                             <th>Slip Seq</th>
@@ -215,9 +230,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+
                     <table class="table table-bordered" id="previewTable">
                         <thead>
                             <tr>
+                                <th>Status</th>
                                 <th>Date</th>
                                 <th>Slip</th>
                                 <th>Slip Seq</th>
@@ -262,14 +279,24 @@
             var table = $('#dnTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('dn.adm.sap.data') }}",
+                ajax: {
+                    url: "{{ route('dn.adm.sap.data') }}",
+                    data: function(d) {
+                        d.created_at = $('#filter-date').val(); // Send selected date to server
+                        d.pccStatus = $('#statusFilter').val();
+                    }
+
+                },
                 columns: [{
+                        data: 'isMatch',
+                        name: 'isMatch'
+                    }, {
                         data: 'date',
                         name: 'date'
                     },
                     {
-                        data: 'slip_no',
-                        name: 'slip_no'
+                        data: 'slip_barcode',
+                        name: 'slip_barcode'
                     },
                     {
                         data: 'pcc_count',
@@ -287,76 +314,23 @@
                         data: 'kd_lot_no',
                         name: 'kd_lot_no'
                     },
-                    // {
-                    //     data: 'vendor_code',
-                    //     name: 'vendor_code'
-                    // },
-                    // {
-                    //     data: 'vendor_alias',
-                    //     name: 'vendor_alias'
-                    // },
-                    // {
-                    //     data: 'vendor_site',
-                    //     name: 'vendor_site'
-                    // },
-                    // {
-                    //     data: 'order_no',
-                    //     name: 'order_no'
-                    // },
-                    // {
-                    //     data: 'po_number',
-                    //     name: 'po_number'
-                    // },
-                    // {
-                    //     data: 'calc_date',
-                    //     name: 'calc_date'
-                    // },
-                    // {
-                    //     data: 'order_date',
-                    //     name: 'order_date'
-                    // },
-                    // {
-                    //     data: 'order_time',
-                    //     name: 'order_time'
-                    // },
-                    // {
-                    //     data: 'del_date',
-                    //     name: 'del_date'
-                    // },
-                    // {
-                    //     data: 'del_time',
-                    //     name: 'del_time'
-                    // },
-                    // {
-                    //     data: 'qty_kbn',
-                    //     name: 'qty_kbn'
-                    // },
-                    // {
-                    //     data: 'order_kbn',
-                    //     name: 'order_kbn'
-                    // },
-                    // {
-                    //     data: 'order_pcs',
-                    //     name: 'order_pcs'
-                    // },
-                    // {
-                    //     data: 'qty_receive',
-                    //     name: 'qty_receive'
-                    // },
-                    // {
-                    //     data: 'qty_balance',
-                    //     name: 'qty_balance'
-                    // },
-                    // {
-                    //     data: 'cancel_status',
-                    //     name: 'cancel_status'
-                    // },
-                    // {
-                    //     data: 'remark',
-                    //     name: 'remark'
-                    // }
                 ]
             });
+            $('#filter-date, #statusFilter').change(function() {
+                table.draw(); // Reload table when date changes
+            });
+            document.querySelector('.exportButton').addEventListener('click', function(e) {
+                // Update hidden input values with current filter values
+                var dateFilter = $('#filter-date').val()
+                var statusFilter = $('#statusFilter').val()
+                this.href = "{{ url('/export/transactions/sap') }}" + "?date_filter=" + dateFilter +
+                    "&status_filter=" + statusFilter;
+            });
+
+
+            // $('#filter-status').change(function() {
+            //     table.draw(); // Reload table when date changes
+            // });
 
             // Setup - add a text input to each footer cell
             $('#demoTable thead tr:eq(1) th').each(function(i) {

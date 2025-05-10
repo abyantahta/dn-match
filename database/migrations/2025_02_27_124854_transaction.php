@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('part_no_pcc')->nullable();
             $table->string('part_no_fg')->nullable();
             $table->string('seq_fg')->nullable();
+            $table->date('del_date')->nullable();
             $table->enum('status',['paired','match','mismatch','not_match']);
             $table->timestamps();
             // $table->integer('order_kbn')->nullable();

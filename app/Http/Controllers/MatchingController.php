@@ -32,20 +32,24 @@ class MatchingController extends Controller
         // dd($transactions);
         return view('matching.index', compact('transactions')); // Pastikan ini adalah view yang tepat
     }
-    public function exportTransactions($plant)
+    public function exportTransactions($plant, Request $request)
     {
         // $transactionExport = new TransactionsExport();
         // dd('plant')
-        $thisDay =  Carbon::today()->format('d-M-Y');
-        $yesterday = Carbon::yesterday()->format('d');
+        // dd($request->query('status_filter'));
+        $dateFilter = $request->query('date_filter') ?: null;
+        $statusFilter = $request->query('status_filter') ?: null;
+        // $thisDay =  Carbon::today()->format('d-M-Y');
+        // $yesterday = Carbon::yesterday()->format('d');
         // dd($thisDay, $yesterday);
+        $fileName = $dateFilter? Carbon::parse($dateFilter)->format('d M Y'):"Full Transactions";
 
         if ($plant === "sap") {
-            return Excel::download(new TransactionsExport, "(ADM SAP) {$yesterday}|{$thisDay} .xlsx");
-        } else if ($plant === "kep") {
-            return Excel::download(new TransactionsKEPExport, "(ADM KEP) {$yesterday}|{$thisDay} .xlsx");
-        } else if ($plant === "kap") {
-            return Excel::download(new TransactionsKAPExport, "(ADM KAP) {$yesterday}|{$thisDay} .xlsx");
+            return Excel::download(new TransactionsExport($dateFilter,$statusFilter), "Log PCC Matching [".$fileName."] .xlsx");
+        // } else if ($plant === "kep") {
+        //     return Excel::download(new TransactionsKEPExport, "(ADM KEP) {$yesterday}|{$thisDay} .xlsx");
+        // } else if ($plant === "kap") {
+        //     return Excel::download(new TransactionsKAPExport, "(ADM KAP) {$yesterday}|{$thisDay} .xlsx");
         }
     }
     public function getTransactions(Request $request)
@@ -75,6 +79,7 @@ class MatchingController extends Controller
     {
         $input = trim($request->input('barcode')); // trim untuk menghilangkan whitespaces
         $input = str_replace(' ','',$input);
+        // $input = str_replace(' ','',$part_no);
         // dd($input);
         // Check if input is Data1 (starting with "DN" and 26 characters in length DN5124100080185ARC-1066001)
         if (str_starts_with($input, '2503')) {
@@ -137,6 +142,9 @@ class MatchingController extends Controller
             // if(strlen($input===11))?
             $part_no = substr($input, 0, 17);   // Extract "BX-yyyy"
             $fg_seq = substr($input, -3);     // Extract "zzz"
+            
+            // $transactionExist = Transaction::where('part')
+
 
             Session::flash('barcode_fg', $input);
             Session::flash('part_no_fg', $part_no);
@@ -145,12 +153,13 @@ class MatchingController extends Controller
             // dd($tempData);
             // Compare no_job from Data1 and no_job_fg from Data2
             // dd($tempData);
-            if ($tempData['part_no'] !== $part_no) {
+            if ($tempData['part_no'] !== str_replace(' ','',$part_no)) {
                 $transaction = new Transaction();
                 $transaction->slip_barcode = $tempData['slip_barcode'];
                 $transaction->part_no_pcc = $tempData['part_no'];
                 $transaction->part_no_fg = $part_no;
                 $transaction->seq_fg = $fg_seq;
+                $transaction->del_date = $tempData['del_date'];
                 $transaction->status = 'mismatch';
                 $transaction->created_at = now();
                 $transaction->save();
@@ -176,6 +185,14 @@ class MatchingController extends Controller
                 return redirect()->back()
                     ->with('message-no-match', '<b>' . $part_no . '</b>, TIDAK SESUAI. SCAN ULANG !')
                     ->with('message', 'SILAHKAN SCAN KEMBALI BARCODE FG.');
+            }
+            //cek kalau ada transaksi dengan sequence number label yang sama, kalau sama, ditolak
+            $transactionWithDupsSeqNo = Transaction::where('part_no_fg',$part_no)->where('seq_fg',$fg_seq)->where('created_at', '>=', Carbon::now()->subHours(12))->count();
+            // dd($transactionWithDupsSeqNo);
+            if($transactionWithDupsSeqNo != 0){
+                // return back()->with('error','Label Finish Good Part No'.$input. " sudah pernah digunakan.");
+                return redirect()->back()->withErrors('<span class="badge bg-warning" ><b>DOUBLE</b></span>, Label Finish Good '.$input. " sudah pernah digunakan");
+
             }
             // dd($tempData['match_kbn']);
             // $match_kbn = $tempData['match_kbn'] + 1;
