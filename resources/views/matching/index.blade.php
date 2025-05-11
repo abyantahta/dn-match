@@ -127,6 +127,9 @@
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
         }
+        td {
+    white-space: nowrap;
+}
 
         .topnav {
             overflow: hidden;
@@ -235,7 +238,7 @@
     <x-navbar-component>PCC Matching</x-navbar-component>
     {{-- <h1 class="text-center bg-red-400 text-white font-bold text-4xl inline-block mx-auto">Mas ipan</h1>
     <div class="w-8 h-8 bg-blue-400 rounded-full"></div> --}}
-    <div class=" mt-2 md:pt-4">
+    <div class=" mt-2 md:pt-4 ">
         {{-- <h5 class="text-center sm:text-2xl text-xl font-bold mb-2">KANBAN MATCHING</h5> --}}
         <!-- Success message -->
         @if (session('success'))
@@ -405,7 +408,7 @@
 
 
     </div></br>
-    <div class="container overflow-x-scroll">
+    <div class="container  overflow-x-scroll">
         <!-- Transaction Summary Table -->
         {{-- <h5>Transaction Summary</h5> --}}
         <table class="w-fit text-center" width="100%" id="transactionsTable">
@@ -462,8 +465,15 @@
             $('#transactionsTable').DataTable({
                 processing: true,
                 serverSide: true,
+                // autoWidth: false,
+                responsive: true,
                 scrollX: true,
                 ajax: '{{ route('transactions.data') }}',
+    //             columnDefs: [
+    //     { width: "20%", targets: 0 },
+    //     { width: "30%", targets: 1 }
+    // ],
+
                 columns: [{
                         data: null,
                         render: function(data, type, row, meta) {
@@ -472,15 +482,15 @@
                     },
                     {
                         data: 'slip_barcode',
-                        // width:'100px'
+                        width:'100px'
                     },
                     {
                         data: 'status'
                     },
                     {
                         data: 'part_no_pcc',
-                        className: 'nowrap',
-                        // width: '100px'
+                        // className: 'nowrap',
+                        // width: '300px'
                     },
                     {
                         data: 'part_no_fg',

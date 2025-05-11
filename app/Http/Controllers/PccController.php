@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Interlock;
 use App\Models\Pcc;
 use Carbon\Carbon;
 use Endroid\QrCode\Encoding\Encoding;
@@ -18,9 +19,7 @@ use setasign\Fpdi\Fpdi;
 use Illuminate\Support\Str;
 
 use Smalot\PdfParser\Parser;
-
-
-
+use Yajra\DataTables\Facades\DataTables;
 
 class PccController extends Controller
 {
@@ -97,6 +96,7 @@ class PccController extends Controller
 
                     // dd($arrText[40],$qty_packingVar,$slip_noVar,$pcc_countVar);
                     // dd($pccInOnePage);
+                    // dd($collectionPCC);
                     for($pccCounter = 0; $pccCounter < $pccInOnePage ; $pccCounter++){
                         // dd($pccCounter,$pccInOnePage);
                             $qty_packingVar = Str::substr($collectionPCC[39+$pccCounter*42],17,6);
@@ -112,8 +112,8 @@ class PccController extends Controller
                             $part_name = $collectionPCC[15+$pccCounter*42];
                             $ps_code = $collectionPCC[18+$pccCounter*42];
                             $order_class = $collectionPCC[20+$pccCounter*42];
-                            $prod_seq_no = $collectionPCC[24+$pccCounter*42];
-                            $kd_lot_no = $collectionPCC[26+$pccCounter*42];
+                            $prod_seq_no = $collectionPCC[24+$pccCounter*42] == ""?null:$collectionPCC[24+$pccCounter*42];
+                            $kd_lot_no = $collectionPCC[26+$pccCounter*42] ;
                             $slip_no = $slip_noVar;
                             $pcc_count = $pcc_countVar;
                             $qty_packing = $qty_packingVar;
@@ -193,13 +193,6 @@ class PccController extends Controller
             }
 
             $pdf->Output(Storage::disk('public')->path('modified/'.$filename),'F');
-            // session()->flash('success', 'PDF generated successfully!');
-
-            // Output the modified PDF
-            // return response($pdf->Output('S'), 200)
-            //     ->header('Content-Type', 'application/pdf')
-            //     ->header('Content-Disposition', 'attachment; filename="modified_' . $filename . '"');
-            // dd($filename);
             return back()->with('success', 'PDF uploaded successfully! <br> Total PCC : '.$pcc_total.' PCC Tersimpan : '.$pcc_saved.' PCC Duplikat: '.$pcc_duplicate)
                 ->with('filename', $filename);
         }
@@ -223,6 +216,37 @@ class PccController extends Controller
         }
 
         return back()->with('error', 'File not found.');
+    }
+
+    public function getPCCData(Request $request)
+    {
+        // dd();
+        $query = Pcc::query(); // Ganti dengan model yang sesuai
+        if($request->created_at){
+            $query->whereDate('date',$request->created_at);
+        }
+        // if (!empty($request->pccStatus)) {
+            if ($request->pccStatus == 'matched') {
+                $query->where('isMatch', 1);
+            } else if ($request->pccStatus == 'unmatched') {
+                $query->where('isMatch', 0);
+            }
+
+        return DataTables::of($query)
+        ->addIndexColumn()
+        ->editColumn('isMatch', function ($transaction) {
+            return '<span class="badge text-center ' . ($transaction->isMatch? 'bg-success' : 'bg-danger') . '">' . ($transaction->isMatch? 'Matched' : 'Unmatched') . '</span>';
+        })
+        ->rawColumns(['isMatch']) // Jangan lupa tambahkan 'created_at' di sini
+        ->make(true);
+    }
+    public function index()
+    {
+        $dateFilter = request('date_filter', '');  // default value, for instance
+        $statusFilter = request('status_filter', '');
+        $interlock = Interlock::get()->first();
+        $dnData = Pcc::get();
+        return view('pcc.index', compact('dnData','dateFilter','statusFilter','interlock'));
     }
 
     

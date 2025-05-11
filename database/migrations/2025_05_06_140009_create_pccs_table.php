@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('part_name');
             $table->string('p/s_code');
             $table->integer('order_class');
-            $table->unsignedBigInteger('prod_seq_no');
+            $table->unsignedBigInteger('prod_seq_no')->nullable();
             $table->string('kd_lot_no');
             $table->unsignedBigInteger('slip_no');
             $table->integer('pcc_count');

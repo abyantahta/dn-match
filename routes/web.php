@@ -30,47 +30,9 @@ Route::post('/matching/reset-session', [MatchingController::class, 'resetSession
 Route::get('/transactions', [MatchingController::class, 'index'])->name('transactions.index');
 Route::get('/transactions/data', [MatchingController::class, 'getTransactions'])->name('transactions.data');
 
-Route::get('/export/transactions/{plant}', [MatchingController::class, 'exportTransactions']);
-// Route::get('/', function () {
-Route::get('/dashboard', [DashboardController::class, 'index']);
-Route::get('/dashboard/data', [DashboardController::class, 'getData'])->name('dashboard.data');
-//     return view('welcome');
-// });
+Route::get('/export/transactions', [MatchingController::class, 'exportTransactions']);
 
-// Route::post('/order-deliveries/import', [OrderDeliveryController::class, 'importOrderDelivery'])->name('import.order.delivery');
-// // Route::get('/order-deliveries', [OrderDeliveryController::class, 'index'])->name('order.deliveries');
-// Route::get('/dn-page', [OrderDeliveryController::class, 'index']);
-// // Route::post('/import-order-delivery', [OrderDeliveryController::class, 'import'])->name('import.order.delivery');
-// // Route::get('/order-deliveries/data', [OrderDeliveryController::class, 'getData'])->name('order.deliveries.data');
-// Route::get('/getdn', [OrderDeliveryController::class, 'getDn'])->name('getdn');
-
-// Route::get('/demos', [DemoController::class, 'index'])->name('demos.index');
-// Route::post('/demos-import', [DemoController::class, 'importDemo'])->name('demos.import');
-// Route::get('/demos/data', [DemoController::class, 'getData'])->name('demos.data');
-
-
-Route::get('/dn/adm/sap', [DnController::class, 'sap'])->name('dn.adm.sap');
-// Route::get('/dn/adm/kep', [DnController::class, 'kep'])->name('dn.adm.kep');
-// Route::get('/dn/adm/kap', [DnController::class, 'kap'])->name('dn.adm.kap');
-Route::get('/dn/adm/sap/data', [DnController::class, 'getDnADMSAPData'])->name('dn.adm.sap.data');
-// Route::get('/dn/adm/kep/data', [DnController::class, 'getDnADMKEPData'])->name('dn.adm.kep.data');
-// Route::get('/dn/adm/kap/data', [DnController::class, 'getDnADMKAPData'])->name('dn.adm.kap.data');
-Route::post('/dn/adm/sap/import', [DnController::class, 'importDnADM'])->name('dn.adm.sap.import');
-// Route::post('/dn/adm/kep/import', [DnController::class, 'importDnADMKEP'])->name('dn.adm.kep.import');
-// Route::post('/dn/adm/kap/import', [DnController::class, 'importDnADMKAP'])->name('dn.adm.kap.import');
-Route::post('/dn/adm/save', [DnController::class, 'saveDnADM'])->name('dn.adm.save');
-
-Route::get('/pcc/upload', [PccController::class, 'showUploadForm'])->name('pcc.upload.form');
+Route::get('/pcc/upload', [PccController::class, 'index'])->name('pcc.upload');
+Route::get('/pcc/data', [PccController::class, 'getPCCData'])->name('pcc.data');
 Route::post('/pcc/upload', [PccController::class, 'upload'])->name('pcc.upload');
 Route::get('/pcc/download/{filename}', [PccController::class, 'download'])->name('pcc.download');
-// Route::post('/generate-pdf', [PccController::class, 'generatePdf']);
-
-// Route::get('/download-pdf/{file}', function ($file) {
-//     $filePath = storage_path("app/public/{$file}");
-
-//     // dd(file_exists($filePath));
-//     if (!file_exists($filePath)) {
-//         return redirect()->back()->with('error', 'Download failed!');
-//     }
-//     return response()->file($filePath);
-// })->name('download.pdf');
