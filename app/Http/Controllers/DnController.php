@@ -10,6 +10,7 @@ use App\Imports\DemosImport;
 use App\Imports\DnADMImport;
 use App\Imports\DnADMKAPImport;
 use App\Imports\DnADMKEPImport;
+use App\Models\Interlock;
 use App\Models\Pcc;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,9 +28,9 @@ class DnController extends Controller
     {
         $dateFilter = request('date_filter', '');  // default value, for instance
         $statusFilter = request('status_filter', '');
-    
+        $interlock = Interlock::get()->first();
         $dnData = Pcc::get();
-        return view('dn.adm.sap', compact('dnData','dateFilter','statusFilter'));
+        return view('dn.adm.sap', compact('dnData','dateFilter','statusFilter','interlock'));
     }
     // public function kep()
     // {

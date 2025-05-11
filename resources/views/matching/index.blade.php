@@ -8,7 +8,7 @@
 
     <!-- Add Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Include CSS for DataTables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 
@@ -19,7 +19,7 @@
 
     <!-- Include JS for DataTables -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <style>
@@ -191,17 +191,47 @@
 </head>
 
 <body>
-
+    <?php
+    
+    // dd($interlock->isLocked);
+    ?>
     {{-- <div class="topnav" id="myTopnav"> --}}
-        {{-- {{ dd($transactions) }} --}}
+    {{-- {{ dd($transactions) }} --}}
     {{-- <div class="topnav absolute top-0 left-0" id="myTopnav">
         <a href="#home" class="active">Home</a>
-        <a href="/dn/adm">DN ADM</a>
+        <a href="/dn/adm">formDN ADM</a>
         <a href="javascript:void(0);" class="icon" onclick="myFunction()">
             <i class="fa fa-bars"></i>
         </a>
     </div> --}}
     {{-- @include('components/navbar-component') --}}
+    @if ($interlock->isLocked)
+        <div class="bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 w-full h-lvh flex items-center justify-center z-[9999]">
+            <div class="w-full mx-4 flex flex-col items-center justify-center bg-white pb-4 rounded-md">  
+                <h1 class="text-xl text-center font-bold bg-red-400 w-full h-12 flex items-center justify-center text-white mb-2">This page is Locked</h1>
+                <h2 class="text-sm">Mismatch at <b>{{ $interlock->created_at }}</b></h2>
+                <h2 class="text-sm">Part PCC : <b>{{ $interlock->part_no_pcc }}</b></h2>
+                <h2 class="text-sm">Part FG : <b>{{ $interlock->part_no_fg }}</b></h2>
+
+                <p class="text-center text-sm my-2 font-bold text-red-400">Hubungi Leader untuk Passkey</p>
+                <form class="" action="{{ route('matching.unlock') }}" method="POST" class="mt-2">
+                    @csrf
+                    <div class="md:mb-4 md:mt-3 flex flex-col items-center gap-2 justify-center">
+                        {{-- <label for="barcode" class="form-label">SCAN BARCODE</label> --}}
+                        {{-- <input type="text" class="form-control" id="barcode" name="barcode" readonly  required autofocus> --}}
+                        @if (session('passkey_error'))
+                            <div class="bg-red-400 text-white w-full font-bold text-center rounded-md py-1">Passkey salah!</div>
+                        @endif
+                        <input type="password" placeholder="Unlock Passkey"
+                            class="pl-4 w-full border-1 border-solid border-gray-700 form-control h-7 md:h-10 " id="passkey"
+                            name="passkey" required autofocus>
+                            <button class="bg-green-700 mx-auto px-4 rounded-sm text-white" type="submit">Submit</button>
+                    </div>
+                </form>
+            
+            </div>
+        </div>
+    @endif
     <x-navbar-component>PCC Matching</x-navbar-component>
     {{-- <h1 class="text-center bg-red-400 text-white font-bold text-4xl inline-block mx-auto">Mas ipan</h1>
     <div class="w-8 h-8 bg-blue-400 rounded-full"></div> --}}
@@ -239,8 +269,9 @@
             <div class="md:mb-4 md:mt-3 flex justify-center">
                 {{-- <label for="barcode" class="form-label">SCAN BARCODE</label> --}}
                 {{-- <input type="text" class="form-control" id="barcode" name="barcode" readonly  required autofocus> --}}
-                <input type="text" placeholder="Scan Barcode" class="pl-4 w-1/2 border-1 border-solid border-gray-700 form-control h-7 md:h-10 " id="barcode" name="barcode" readonly
-                    onfocus="this.removeAttribute('readonly');" required autofocus>
+                <input type="text" placeholder="Scan Barcode"
+                    class="pl-4 w-1/2 border-1 border-solid border-gray-700 form-control h-7 md:h-10 " id="barcode"
+                    name="barcode" readonly onfocus="this.removeAttribute('readonly');" required autofocus>
             </div>
             <div class="container">
                 @if (session('message-no-match'))
@@ -253,9 +284,9 @@
                     <div class="w-1/2">
                         <div class="">
                             <label for="no_job" class="form-label md:text-xl text-xs font-bold">BARCODE PCC</label>
-                            <input type="text" class="form-control  form-input h-6 text-sm md:h-8 md:text-base" id="no_job" name="no_job"
-                                value="{{ session('slip_barcode') }}" disabled>
-                                {{-- <h2 class="">halo semuanya</h2> --}}
+                            <input type="text" class="form-control  form-input h-6 text-sm md:h-8 md:text-base"
+                                id="no_job" name="no_job" value="{{ session('slip_barcode') }}" disabled>
+                            {{-- <h2 class="">halo semuanya</h2> --}}
                         </div>
                     </div>
                     <div class="w-1/2">
@@ -267,8 +298,7 @@
                                         <i class="fas fa-circle-xmark text-warning"></i>
                                     </span>
                                 @endif --}}
-                                <input type="text"
-                                    class="form-control form-input h-6 text-sm md:h-8 md:text-base"
+                                <input type="text" class="form-control form-input h-6 text-sm md:h-8 md:text-base"
                                     id="no_job_fg" name="no_job_fg" value="{{ session('barcode_fg') }}" disabled>
                             </div>
                         </div>
@@ -276,26 +306,27 @@
                 </div>
 
                 {{-- <div class="row"> --}}
-                    <div class="flex w-full gap-2 md:gap-16 md:mb-4">
-                        <div class="w-1/2">
-                            <div class="">
-                                <label for="barcode_cust" class="form-label md:text-xl text-xs font-bold">PART NO</label>
-                                <input type="text" class="form-control form-input md:h-8 md:text-base h-6 text-sm" id="barcode_cust" name="barcode_cust"
-                                    value="{{ session('part_no') }}" disabled>
-                            </div>
-                        </div>
-                        <div class="w-1/2">
-                            <div class="">
-                                <label for="barcode_fg" class="form-label md:text-xl text-xs font-bold">PART NO FG</label>
-                                <input type="text" class="form-control  form-input h-6 text-sm md:h-8 md:text-base-disabled  @if (session('message-no-match')) is-invalid @endif" id="barcode_fg"
-                                    name="barcode_fg" value="{{ session('part_no_fg') }}" disabled>
-                            </div>
-    
+                <div class="flex w-full gap-2 md:gap-16 md:mb-4">
+                    <div class="w-1/2">
+                        <div class="">
+                            <label for="barcode_cust" class="form-label md:text-xl text-xs font-bold">PART NO</label>
+                            <input type="text" class="form-control form-input md:h-8 md:text-base h-6 text-sm"
+                                id="barcode_cust" name="barcode_cust" value="{{ session('part_no') }}" disabled>
                         </div>
                     </div>
-                    {{-- <div class="">
+                    <div class="w-1/2">
+                        <div class="">
+                            <label for="barcode_fg" class="form-label md:text-xl text-xs font-bold">PART NO FG</label>
+                            <input type="text"
+                                class="form-control  form-input h-6 text-sm md:h-8 md:text-base-disabled  @if (session('message-no-match')) is-invalid @endif"
+                                id="barcode_fg" name="barcode_fg" value="{{ session('part_no_fg') }}" disabled>
+                        </div>
+
+                    </div>
+                </div>
+                {{-- <div class="">
                     </div> --}}
-                    {{-- <div class="w-full md:mb-4  gap-2 md:gap-16 flex">
+                {{-- <div class="w-full md:mb-4  gap-2 md:gap-16 flex">
                         <div class="w-1/2 ">
                                 <label for="no_dn" class="form-label md:text-xl text-xs font-bold">SLIP NO</label>
                                 <input type="text" class="form-control w-full form-input h-6 text-sm md:h-8 md:text-base clearleft clearright"
@@ -320,24 +351,24 @@
 
                     </div> --}}
 
-                    <div class="flex w-full gap-2 md:gap-16 md:mb-4">
-                        <div class="w-1/2">
+                <div class="flex w-full gap-2 md:gap-16 md:mb-4">
+                    <div class="w-1/2">
 
-                            <div class="">
-                                <label for="no_seq" class="form-label md:text-xl text-xs font-bold">SEQ NO</label>
-                                <input type="text" class="form-control form-input h-6 text-sm md:h-8 md:text-base" id="no_seq" name="no_seq"
-                                    value="{{ session('pcc_seq') }}" disabled>
-                            </div>
-                        </div>
-                        <div class="w-1/2">
-                            <div class="">
-                                <label for="no_seq_fg" class="form-label md:text-xl text-xs font-bold">SEQ NO FG</label>
-                                <input type="text" class="form-control form-input h-6 text-sm md:h-8 md:text-base" id="no_seq_fg"
-                                    name="no_seq_fg" value="{{ session('no_seq_fg') }}" disabled>
-                            </div>
+                        <div class="">
+                            <label for="no_seq" class="form-label md:text-xl text-xs font-bold">SEQ NO</label>
+                            <input type="text" class="form-control form-input h-6 text-sm md:h-8 md:text-base"
+                                id="no_seq" name="no_seq" value="{{ session('pcc_seq') }}" disabled>
                         </div>
                     </div>
-                    {{-- <div class="row">
+                    <div class="w-1/2">
+                        <div class="">
+                            <label for="no_seq_fg" class="form-label md:text-xl text-xs font-bold">SEQ NO FG</label>
+                            <input type="text" class="form-control form-input h-6 text-sm md:h-8 md:text-base"
+                                id="no_seq_fg" name="no_seq_fg" value="{{ session('no_seq_fg') }}" disabled>
+                        </div>
+                    </div>
+                </div>
+                {{-- <div class="row">
                         <div class="">
                             <div class="">
                                 <label for="dn_status" class=" form-label text-xs md:text-xl font-bold text-center md:text-left block mx-auto mb-3">DN
@@ -360,14 +391,15 @@
                 {{-- </div> --}}
 
                 <div class="mt-5">
-                    <button type="submit" class="btn btn-success block mx-auto mt-2 py-1 px-8 text-md md:text-xl btn-sm :btn-md">Submit</button>
+                    <button type="submit"
+                        class="btn btn-success block mx-auto mt-2 py-1 px-8 text-md md:text-xl btn-sm :btn-md">Submit</button>
                     {{-- <button type="submit" class="block mx-auto btn-success text-white md:font-bold btn-sm btn-md text-md md:text-xl text-md py-1 px-8">Submit</button> --}}
                 </div>
-            </form>
-            <form action="{{ route('matching.reset') }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn btn-secondary block mx-auto mt-2 btn-sm :btn-md">Reset Session</button>
-            </form>
+        </form>
+        <form action="{{ route('matching.reset') }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="submit" class="btn btn-secondary block mx-auto mt-2 btn-sm :btn-md">Reset Session</button>
+        </form>
 
         <!-- Tombol Reset -->
 
@@ -376,8 +408,8 @@
     <div class="container overflow-x-scroll">
         <!-- Transaction Summary Table -->
         {{-- <h5>Transaction Summary</h5> --}}
-            <table class="w-fit text-center" width="100%" id="transactionsTable">
-                <thead class="w-full">
+        <table class="w-fit text-center" width="100%" id="transactionsTable">
+            <thead class="w-full">
                 <tr>
                     <th class="text-center">No</th>
                     <th class="text-center">Slip Barcode</th>
@@ -396,8 +428,8 @@
                     <th class="text-center">Created At</th> --}}
                 </tr>
 
-                </thead>
-            </table>
+            </thead>
+        </table>
     </div>
 
     <script>

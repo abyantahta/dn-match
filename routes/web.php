@@ -24,6 +24,7 @@ Route::get('/', [MatchingController::class, 'index'])->name('matching.index');
 Route::get('/matching', [MatchingController::class, 'index'])->name('matching.index');
 Route::post('/matching', [MatchingController::class, 'store'])->name('matching.store');
 Route::post('/matching/store', [MatchingController::class, 'store'])->name('matching.store');
+Route::post('/matching/unlock', [MatchingController::class, 'unlock'])->name('matching.unlock');
 Route::post('/matching/reset-session', [MatchingController::class, 'resetSession'])->name('matching.reset');
 
 Route::get('/transactions', [MatchingController::class, 'index'])->name('transactions.index');

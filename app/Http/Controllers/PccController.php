@@ -65,7 +65,12 @@ class PccController extends Controller
             $file->storeAs('/pdfs', $filename, 'public');
 
             $pdf = new Fpdi();
-            $pageCount = $pdf->setSourceFile(Storage::disk('public')->path('pdfs/'.$filename));
+            try{
+
+                $pageCount = $pdf->setSourceFile(Storage::disk('public')->path('pdfs/'.$filename));
+            }catch(\Exception $e){
+                return back()->with('error','PDF tidak bisa diunggah karena encrypted');
+            }
 
             $pcc_saved = 0;
             $pcc_duplicate = 0;

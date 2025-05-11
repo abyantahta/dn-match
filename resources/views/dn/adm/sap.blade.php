@@ -92,7 +92,9 @@
     {{-- <h1>haloo</h1> --}}
     <x-navbar-component>PCC MATCHING</x-navbar-component>
 
-
+    <?php
+    // dd($interlock);
+    ?>
     <div class="container px-0 mt-2 ">
         <div class=" w-full  ">
             {{-- <h3 class="card-header p-3 text-3xl"><i class="fa fa-star"></i> PCC MATCHING</h3> --}}

@@ -12,8 +12,10 @@ use App\Exports\TransactionsExport;
 use App\Exports\TransactionsKEPExport;
 use App\Exports\TransactionsKAPExport;
 use App\Models\DnADMKAP;
+use App\Models\Interlock;
 use App\Models\Pcc;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 
@@ -29,8 +31,10 @@ class MatchingController extends Controller
     {
         // Untuk menampilkan view DataTable
         $transactions = Transaction::all();
+        $interlock = Interlock::get()->first();
+
         // dd($transactions);
-        return view('matching.index', compact('transactions')); // Pastikan ini adalah view yang tepat
+        return view('matching.index', compact('transactions','interlock')); // Pastikan ini adalah view yang tepat
     }
     public function exportTransactions($plant, Request $request)
     {
@@ -77,6 +81,11 @@ class MatchingController extends Controller
     }
     public function store(Request $request)
     {
+        $isLocked = Interlock::get()->first()->isLocked;
+        // dd($isLocked);
+        if($isLocked){
+            return redirect()->back();
+        }
         $input = trim($request->input('barcode')); // trim untuk menghilangkan whitespaces
         $input = str_replace(' ','',$input);
         // $input = str_replace(' ','',$part_no);
@@ -161,8 +170,30 @@ class MatchingController extends Controller
                 $transaction->seq_fg = $fg_seq;
                 $transaction->del_date = $tempData['del_date'];
                 $transaction->status = 'mismatch';
-                $transaction->created_at = now();
+                $transaction->created_at = Carbon::now();
                 $transaction->save();
+
+                Interlock::query()->first()->update([
+                    'isLocked'=>true,
+                    'created_at'=> Carbon::now(),
+                    'part_no_pcc'=> $tempData['part_no'],
+                    'part_no_fg'=> $part_no
+                ]);
+                // $timeNow = ;
+                // dd(Carbon::now()->format('H:i'));
+                try{
+                    $response = Http::withHeaders([
+                        'Authorization' => 'DcjkiWJ9gwbp7scYKowe',
+                    ])->withOptions(['verify' => false])->post('https://api.fonnte.com/send',[
+                        'target'=> '085876366469',
+                        'message' => 'Terjadi mismatch pukul '. Carbon::now()->format('H:i'). '
+Segera datang ke line.'
+                    ]);
+                }catch(\Exception $e){
+
+                }
+
+                // Post::where('id', 1)->update(['title' => 'New Title', 'content' => 'Updated content']);
                 // $transaction->barcode_fg = $input;
                 // $transaction->no_job_fg = $no_job_fg;
                 // $transaction->no_seq_fg = $no_seq_fg;
@@ -185,6 +216,7 @@ class MatchingController extends Controller
                 return redirect()->back()
                     ->with('message-no-match', '<b>' . $part_no . '</b>, TIDAK SESUAI. SCAN ULANG !')
                     ->with('message', 'SILAHKAN SCAN KEMBALI BARCODE FG.');
+                    // ->with();
             }
             //cek kalau ada transaksi dengan sequence number label yang sama, kalau sama, ditolak
             $transactionWithDupsSeqNo = Transaction::where('part_no_fg',$part_no)->where('seq_fg',$fg_seq)->where('created_at', '>=', Carbon::now()->subHours(12))->count();
@@ -238,6 +270,16 @@ class MatchingController extends Controller
 
         // Handle invalid input formats for both data1 and data2
         return redirect()->back()->withErrors($input . '(L:' . strlen($input) . ') INVALID FORMAT. PASTIKAN SCAN BARCODE SESUAI FORMAT YANG SDH DI REGISTER.');
+    }
+
+    public function unlock (Request $request){
+        $passkey = trim($request->input('passkey')); // trim untuk menghilangkan whitespaces
+        // dd($passkey);
+        if($passkey !== "triwanto123"){
+            return redirect()->back()->with('passkey_error','Passkey salah!');
+        }
+        Interlock::query()->first()->update(['isLocked'=>false]);
+        return redirect()->back();
     }
 
 
