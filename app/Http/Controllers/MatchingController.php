@@ -148,9 +148,10 @@ class MatchingController extends Controller
                     $response = Http::withHeaders([
                         'Authorization' => 'DcjkiWJ9gwbp7scYKowe',
                     ])->withOptions(['verify' => false])->post('https://api.fonnte.com/send',[
-                        'target'=> '085876366469',
+                        'target'=> '089522134460, 081270074197,082245792234',
                         'message' => 'Terjadi mismatch pukul '. Carbon::now()->format('H:i'). '
-Segera datang ke line.'
+Segera datang ke line.',
+                        'delay' => '2'
                     ]);
                 }catch(\Exception $e){
 
@@ -198,7 +199,7 @@ Segera datang ke line.'
     public function unlock (Request $request){
         $passkey = trim($request->input('passkey')); // trim untuk menghilangkan whitespaces
         // dd($passkey);
-        if($passkey !== "triwanto123"){
+        if($passkey !== "SaNkEi2011..!"){
             return redirect()->back()->with('passkey_error','Passkey salah!');
         }
         Interlock::query()->first()->update(['isLocked'=>false]);
