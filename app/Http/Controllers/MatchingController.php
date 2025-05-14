@@ -148,7 +148,7 @@ class MatchingController extends Controller
                     $response = Http::withHeaders([
                         'Authorization' => 'DcjkiWJ9gwbp7scYKowe',
                     ])->withOptions(['verify' => false])->post('https://api.fonnte.com/send',[
-                        'target'=> '089522134460, 081270074197,082245792234',
+                        'target'=> '089522134460, 081270074197,08111990425',
                         'message' => 'Terjadi mismatch pukul '. Carbon::now()->format('H:i'). '
 Segera datang ke line.',
                         'delay' => '2'
