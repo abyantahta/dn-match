@@ -86,7 +86,7 @@ class PccController extends Controller
                 if(!($collectionPCC[1]==="FROM:" && is_int($collectionPCC->count())/42)){
                     return back()->with('error','PDF tidak sesuai standard, silahkan upload PDF yang sesuai');
                 }
-                $partNoValueArray = array();
+                $slipBarcodes = array();
                 // $i = 0;
                 // dd($collectionPCC);
                 
@@ -124,7 +124,7 @@ class PccController extends Controller
                             $slip_barcode = $collectionPCC[39+$pccCounter*42];
 
                             $pcc_total++;
-                            array_push($partNoValueArray,$slip_noVar);
+                            array_push($slipBarcodes,$slip_barcode);
                             $existedPcc = Pcc::where('slip_barcode',$slip_barcode)->get()->first();
                             if(!$existedPcc){
                                 Pcc::create([
@@ -155,11 +155,11 @@ class PccController extends Controller
                             }
                             // dd('halo');
                     }
-                foreach ($partNoValueArray as $partNo){
+                foreach ($slipBarcodes as $slip_barcode){
                     
                     $writer = new PngWriter();
                     $qrCode = new QrCode(
-                        data: $partNo,
+                        data: $slip_barcode,
                         encoding: new Encoding('UTF-8'),
                         errorCorrectionLevel: ErrorCorrectionLevel::Low,
                         size: 300,
@@ -171,7 +171,7 @@ class PccController extends Controller
                     if(!File::exists(Storage::disk('public')->path('qrcodes'))){
                         File::makeDirectory(Storage::disk('public')->path('qrcodes'),0777,true,true);
                     }
-                    $result->saveToFile(Storage::disk('public')->path('qrcodes/'.$partNo.'.png'));
+                    $result->saveToFile(Storage::disk('public')->path('qrcodes/'.$slip_barcode.'.png'));
                     
                 }
                 
@@ -185,8 +185,8 @@ class PccController extends Controller
                 // Use the imported page
                 $pdf->useTemplate($templateId);
                 $offsety = 61;
-                foreach ($partNoValueArray as $partNo){
-                    $pdf->Image(Storage::disk('public')->path('qrcodes/'.$partNo.'.png'),55,$offsety,12,0,'PNG');
+                foreach ($slipBarcodes as $slipBarcode){
+                    $pdf->Image(Storage::disk('public')->path('qrcodes/'.$slipBarcode.'.png'),55,$offsety,12,0,'PNG');
                     $offsety +=70;
                 }
 

@@ -69,7 +69,7 @@ class MatchingController extends Controller
         }
         $input = trim($request->input('barcode')); // trim untuk menghilangkan whitespaces
         $input = str_replace(' ','',$input);
-        if (str_starts_with($input, '25')) {
+        if (str_starts_with($input, '2')) {
             // Check if input is Data1 (starting with "DN" and 26 characters in length DN5124100080185ARC-1066001)
             if (strlen($input) !== 23) {
                 return redirect()->back()->withErrors($input . '(L:' . strlen($input) . ') INVALID FORMAT. PASTIKAN SCAN BARCODE SESUAI FORMAT YANG SDH DI REGISTER.');
