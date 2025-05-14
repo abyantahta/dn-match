@@ -6,9 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "eightynine/filament-excel-import": "^3.1",
         "endroid/qr-code": "^6.0",
-        "filament/filament": "^3.0-stable",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
@@ -42,8 +40,7 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
