@@ -81,28 +81,18 @@ class PccController extends Controller
                 $arrText = preg_split("/\r\n|\r|\n/", $text);
                 $collectionPCC = collect($arrText);
                 $collectionPCC = $collectionPCC->forget(0)->forget(41)->values();
-                // $arrText = array_shift($arrText);
-                // dd($collectionPCC);
                 if(!($collectionPCC[1]==="FROM:" && is_int($collectionPCC->count())/42)){
                     return back()->with('error','PDF tidak sesuai standard, silahkan upload PDF yang sesuai');
                 }
                 $slipBarcodes = array();
-                // $i = 0;
-                // dd($collectionPCC);
-                
-                // while($i<$collectionPCC->count()){
-                    
                     $pccInOnePage = ($collectionPCC->count())/42;
 
-                    // dd($arrText[40],$qty_packingVar,$slip_noVar,$pcc_countVar);
-                    // dd($pccInOnePage);
-                    // dd($collectionPCC);
                     for($pccCounter = 0; $pccCounter < $pccInOnePage ; $pccCounter++){
                         // dd($pccCounter,$pccInOnePage);
-                            $qty_packingVar = Str::substr($collectionPCC[39+$pccCounter*42],17,6);
-                            $slip_noVar = Str::substr($collectionPCC[39+$pccCounter*42],0,12);
+                        $qty_packingVar = Str::substr($collectionPCC[39+$pccCounter*42],17,6);
+                        $slip_noVar = Str::substr($collectionPCC[39+$pccCounter*42],0,12);
                             $pcc_countVar = Str::substr($collectionPCC[39+$pccCounter*42],13,4);
-
+                            
                             $del_from = $collectionPCC[0+$pccCounter*42];
                             $del_to = Str::substr($collectionPCC[3+$pccCounter*42],4,14);
                             $supply_address = $collectionPCC[8+$pccCounter*42];
@@ -154,10 +144,14 @@ class PccController extends Controller
                                 $pcc_duplicate++;
                             }
                             // dd('halo');
-                    }
-                foreach ($slipBarcodes as $slip_barcode){
+                        }
+                        
+                        // if($pageNo==2){
+                        //     dd($slipBarcodes);
+                        // }
+                        foreach ($slipBarcodes as $slip_barcode){
                     
-                    $writer = new PngWriter();
+                            $writer = new PngWriter();
                     $qrCode = new QrCode(
                         data: $slip_barcode,
                         encoding: new Encoding('UTF-8'),
@@ -193,6 +187,7 @@ class PccController extends Controller
             }
 
             $pdf->Output(Storage::disk('public')->path('modified/'.$filename),'F');
+
             return back()->with('success', 'PDF uploaded successfully! <br> Total PCC : '.$pcc_total.' PCC Tersimpan : '.$pcc_saved.' PCC Duplikat: '.$pcc_duplicate)
                 ->with('filename', $filename);
         }
@@ -200,19 +195,11 @@ class PccController extends Controller
     }
     public function download($filename)
     {
+        // dd($filename);
         $path = 'modified/' . $filename;
         // dd($path);
         if (Storage::disk('public')->exists($path)) {
-            // Create new PDF instance
-            $pdf = new Fpdi();
-            $pdf->AddPage();
-            $pdf->setSourceFile(Storage::disk('public')->path($path));
-            $tplId = $pdf->importPage(1);
-            $pdf->useTemplate($tplId);
-
-            return response($pdf->Output('S'), 200)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="modified_' . $filename . '"');
+            return response()->download(Storage::disk('public')->path($path));
         }
 
         return back()->with('error', 'File not found.');
